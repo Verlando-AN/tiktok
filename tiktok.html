@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embed TikTok dari Link Pendek</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        #tiktok-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        #tiktok-input:focus {
+            outline: none;
+            border-color: #FE2C55;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(254, 44, 85, 0.1);
+        }
+        
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #FE2C55 0%, #ff6b6b 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(254, 44, 85, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(254, 44, 85, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        #tiktok-container {
+            margin-top: 30px;
+            min-height: 100px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        #tiktok-container > p {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
+            border-radius: 12px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+        
+        .loading::before {
+            content: '⏳';
+            font-size: 32px;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .error {
+            color: #d32f2f;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            border-radius: 12px;
+            border-left: 4px solid #d32f2f;
+            font-size: 14px;
+            animation: shake 0.5s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .error::before {
+            content: '❌ ';
+            font-size: 18px;
+        }
+        
+        .tiktok-logo {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 48px;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tiktok-logo">📱</div>
+        <h1>TikTok Video Viewer</h1>
+        <p class="subtitle">Masukkan link TikTok untuk menampilkan video</p>
+        
+        <div class="input-wrapper">
+            <input type="text" id="tiktok-input" placeholder="Tempel link vt.tiktok.com/ atau tiktok.com/..." required>
+        </div>
+        
+        <button onclick="embedTikTok()">🎬 Tampilkan Video</button>
+        
+        <div id="tiktok-container">
+            <p>Video akan muncul di sini setelah link dimasukkan</p>
+        </div>
+    </div>
+    
+    <script async src="https://www.tiktok.com/embed.js"></script>
+    
+    <script>
+        async function embedTikTok() {
+            const shortUrl = document.getElementById('tiktok-input').value.trim();
+            const container = document.getElementById('tiktok-container');
+            if (!shortUrl) {
+                container.innerHTML = '<p class="error">Masukkan link TikTok terlebih dahulu.</p>';
+                return;
+            }
+            container.innerHTML = '<div class="loading">Sedang memuat video...</div>'; 
+            try {
+                const oembedUrl = `https://www.tiktok.com/oembed?url=${encodeURIComponent(shortUrl)}`;
+                
+                const res = await fetch(oembedUrl);
+                
+                if (!res.ok) {
+                    throw new Error(`Gagal mengambil data: HTTP status ${res.status}`);
+                }
+                
+                const data = await res.json();
+                
+                if (data && data.html) {
+                    container.innerHTML = data.html;
+                    
+                    const existingScript = document.querySelector('script[src="https://www.tiktok.com/embed.js"]');
+                    if (existingScript) {
+                        existingScript.remove();
+                    }
+                    
+                    const script = document.createElement('script');
+                    script.src = "https://www.tiktok.com/embed.js";
+                    script.async = true;
+                    document.body.appendChild(script);
+                } else {
+                    throw new Error('Respons oEmbed tidak valid atau tidak berisi embed HTML.');
+                }
+            } catch (err) {
+                console.error('Gagal embed TikTok:', err);
+                container.innerHTML = '<div class="error">Gagal menampilkan video. Pastikan link benar, video publik, dan coba jalankan ulang browser.</div>';
+            }
+        }
+        
+        document.getElementById('tiktok-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                embedTikTok();
+            }
+        });
+    </script>
+</body>
+</html>
